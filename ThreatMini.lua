@@ -60,7 +60,7 @@ local function TargetFrame_UpdateThreat()
 	else
 		ThreatMiniAbsText:SetTextColor(0.6, 1, 1, 1)
 	end
-	ThreatMiniAbsText:SetText(threatDelta .. " (".. unitThreat .. " / " .. maxThreat .. ")")
+	ThreatMiniAbsText:SetText(math.floor(threatDelta) .. " (".. math.floor(unitThreat) .. " / " .. math.floor(maxThreat) .. ")")
 end
 
 --	LibThreatClassic Registration
