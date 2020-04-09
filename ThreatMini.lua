@@ -14,6 +14,11 @@ local function CreateFontstring()
   ThreatMiniPctText:SetText("100%")
   ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
 
+  ThreatMiniAbsText = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
+  ThreatMiniAbsText:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
+  ThreatMiniAbsText:SetText("100%")
+  ThreatMiniAbsText:SetTextColor(1, 1, 1, 1)
+
 end
 
 --credit to SDPhantom from Modern TargetFrame
@@ -30,20 +35,32 @@ local function UnitThreatPercentageOfLead(unit,mob)--	Hack to implement UnitThre
 				if val>maxval then maxval=val; end
 			end
 		end
-		return maxval>0 and 100*unitval/maxval or 0;
+		return maxval>0 and 100*unitval/maxval or 0, unitval, maxval;
 	else return 0; end
 end
 
 local function TargetFrame_UpdateThreat()
-local percent = UnitThreatPercentageOfLead("player","target") or "nil"
-percent = math.floor(percent)
-if percent >= 100 then 
-  ThreatMiniPctText:SetTextColor(1, 0, 0, 1)
-else
-  ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
-end
-ThreatMiniPctText:SetText(percent .. "%")
-
+	local percent, unitThreat, maxThreat = UnitThreatPercentageOfLead("player","target")
+	percent = math.floor(percent)
+	if percent >= 100 then 
+		ThreatMiniPctText:SetTextColor(1, 0, 0, 1)
+	else
+		ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
+	end
+	if percent > 0 then
+		ThreatMiniPctText:SetText(percent .. "%")
+	else
+		ThreatMiniPctText:SetText("-")
+	end
+	ThreatMiniAbsText:SetText("")
+	if maxThreat == nil or percent == 0 then return end
+	local threatDelta = unitThreat - maxThreat
+	if threatDelta > 0 then
+		ThreatMiniAbsText:SetTextColor(1, 0.6, 0.6, 1)
+	else
+		ThreatMiniAbsText:SetTextColor(0.6, 1, 1, 1)
+	end
+	ThreatMiniAbsText:SetText(threatDelta .. " (".. unitThreat .. " / " .. maxThreat .. ")")
 end
 
 --	LibThreatClassic Registration
