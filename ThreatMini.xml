@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+<Script file="ThreatMini.lua"/>
+
+<FontString name="ThreatMiniUiWindowListNameFontstring" frameStrata="DIALOG" inherits="GameFontNormalSmall" text="Player Name" justifyH="LEFT" justifyV="MIDDLE" virtual="true">
+         <Color r="1" g="1" b="1" a="1"/>
+         <FontHeight val="10"/>
+         <Anchors>
+         <Anchor point="TOPLEFT" relativeTo="$parent" x="5" y="-5" />
+         </Anchors>
+</FontString>
+
+<!-- ThreatMini Main Frame -->
+  <Frame name="ThreatMini" hidden="true">
+    <Scripts>
+      <OnLoad function="ThreatMini_OnLoad"/>
+      <OnEvent function="ThreatMini_OnEvent"/>
+    </Scripts>
+  </Frame>
+
+<!-- ThreatMini UI Window -->
+  <Frame name="ThreatMiniUiWindow" frameStrata="DIALOG" parent="UIParent" hidden="false" movable="true" enableMouse="true">
+    <Size><AbsDimension x="40" y="20"/></Size>
+    <Anchors> <Anchor point="CENTER" /></Anchors>
+    <Scripts>
+      <OnLoad>
+        self:RegisterForDrag("LeftButton");
+      </OnLoad>
+      <OnDragStart>
+        self:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        self:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"  tile="true">
+    </Backdrop>
+  </Frame>
+</Ui>
+
+
