@@ -11,12 +11,12 @@ end
 local function CreateFontstring()
 
   ThreatMiniPctText = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMiniPctText:SetText("100%")
+  ThreatMiniPctText:SetText("-")
   ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
 
   ThreatMiniAbsText = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
   ThreatMiniAbsText:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
-  ThreatMiniAbsText:SetText("100%")
+  ThreatMiniAbsText:SetText("")
   ThreatMiniAbsText:SetTextColor(1, 1, 1, 1)
 
 end
@@ -66,10 +66,6 @@ end
 --	LibThreatClassic Registration
 local LTCIdentifier={};--	CallbackHandler-1.0 can take any value as an identifier, same identifiers overwrite each other on the same events
 LibThreatClassic.RegisterCallback(LTCIdentifier,"Activate",TargetFrame_UpdateThreat);
-LibThreatClassic.RegisterCallback(LTCIdentifier,"Deactivate",function()
-	ThreatFrame:Hide(); ThreatGlow:Hide();
-	TargetFrame_UpdateAuras(TargetFrame);--	Update buff offset
-end);
 LibThreatClassic.RegisterCallback(LTCIdentifier,"ThreatUpdated",function(event,unitguid,targetguid)
 	if targetguid==UnitGUID("target") then TargetFrame_UpdateThreat(); end
 end);
