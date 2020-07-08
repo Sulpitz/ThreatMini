@@ -4,11 +4,19 @@ function SlashCmdList.TM(msg, editbox)
 		if ThreatMini.delta == false or ThreatMini.delta == nil then
 			ThreatMini.delta = true
 			print("ThreatMini: Threat delta is shown")			
-			ThreatMiniUiWindow:SetWidth(40)
-		else
-			ThreatMini.delta = true
-			print("ThreatMini: Threat delta is now off")			
 			ThreatMiniUiWindow:SetWidth(80)
+		else
+			ThreatMini.delta = false
+			print("ThreatMini: Threat delta is now off")			
+			ThreatMiniUiWindow:SetWidth(40)
+		end
+	elseif msg == "debug" then
+		if ThreatMini.debug == false or ThreatMini.debug == nil then
+			ThreatMini.debug = true
+			print("ThreatMini: Debug mode on")
+		else
+			ThreatMini.debug = false
+			print("ThreatMini: Debug mode off")
 		end
 	elseif msg == "" or "help" then
 		print("ThreatMini Commands:")
@@ -16,13 +24,24 @@ function SlashCmdList.TM(msg, editbox)
 		print("   /tm delta - show/hide delta Threat display")
 	end
 end
-print("ERR0")
+
+local function InitSettings()
+	if ThreatMini == nil or ThreatMini.setup ~= true then 
+		ThreatMini = {}
+		ThreatMini.setup = true
+		ThreatMini.delta = true
+		ThreatMini.debug = false
+	end
+end
 
 local function GetTankThreat()
 	
-	if select(1, UnitDetailedThreatSituation("targettarget", "target")) then
-		print("threat by target tartget found")
+	if select(1, UnitDetailedThreatSituation("targettarget", "target")) then	
+		print("threat by target tartget found")	
+		return select(5, UnitDetailedThreatSituation("targettarget", "target"))
 	end
+
+	if ThreatMini.debug then message("ThreatMini: target search exceeded 'targettarget'") end
 
 	if select(1, UnitDetailedThreatSituation("player", "target")) then
 		return select(5, UnitDetailedThreatSituation("player", "target"))
@@ -73,36 +92,6 @@ local function CreateFontstring()
   ThreatMiniThreatDelta:SetText("")
   ThreatMiniThreatDelta:SetJustifyH("RIGHT")
   ThreatMiniThreatDelta:SetTextColor(1, 1, 1, 1)
-
-  ThreatMiniDeltaThreat = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMiniDeltaThreat:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
-  ThreatMiniDeltaThreat:SetText("")
-  ThreatMiniDeltaThreat:SetTextColor(1, 1, 1, 1)
-
-  ThreatMiniIsTanking = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMiniIsTanking:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
-  ThreatMiniIsTanking:SetText("")
-  ThreatMiniIsTanking:SetTextColor(1, 1, 1, 1)
-
-  ThreatMinistatus = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMinistatus:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -40)
-  ThreatMinistatus:SetText("")
-  ThreatMinistatus:SetTextColor(1, 1, 1, 1)
-
-  ThreatMinirawthreatpct = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMinirawthreatpct:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -60)
-  ThreatMinirawthreatpct:SetText("")
-  ThreatMinirawthreatpct:SetTextColor(1, 1, 1, 1)
-
-  ThreatMinithreatvalue = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMinithreatvalue:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -80)
-  ThreatMinithreatvalue:SetText("")
-  ThreatMinithreatvalue:SetTextColor(1, 1, 1, 1)
-
-  ThreatMiniTankThreat = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMiniTankThreat:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -100)
-  ThreatMiniTankThreat:SetText("")
-  ThreatMiniTankThreat:SetTextColor(1, 1, 1, 1)
   
 	if ThreatMini.delta then
 		ThreatMiniUiWindow:SetWidth(80)
@@ -115,12 +104,6 @@ end
 local function TargetFrame_UpdateThreat()
 	isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 	if (threatpct == nil) then 		
-		ThreatMiniIsTanking:SetText("")
-		ThreatMinistatus:SetText("")
-		ThreatMinirawthreatpct:SetText("")
-		ThreatMinithreatvalue:SetText("")		
-		ThreatMiniPctText:SetText("-")	
-		ThreatMiniTankThreat:SetText("")
 		ThreatMiniPctText:SetText("")
 		ThreatMiniThreatDelta:SetText("")
 		return
@@ -144,7 +127,6 @@ local function TargetFrame_UpdateThreat()
 	end	
 
 	if ThreatMini.delta then
-		ThreatMiniUiWindow:SetWidth(80)
 		ThreatMiniPctText:SetText(threatpct .. "%")
 		if threatDelta < -9999 then
 			threatDelta = math.floor(threatDelta/1000)
@@ -152,30 +134,20 @@ local function TargetFrame_UpdateThreat()
 		end
 		ThreatMiniThreatDelta:SetText(threatDelta)
 	else			
-		ThreatMiniUiWindow:SetWidth(40)
 		ThreatMiniPctText:SetText(threatpct .. "%")
 		ThreatMiniThreatDelta:SetText("")
 	end
-
-	--if isTanking then ThreatMiniIsTanking:SetText("Tanking!") else ThreatMiniIsTanking:SetText("not Tanking") end
-	--ThreatMinistatus:SetText("Status: " .. status)
-	--ThreatMinirawthreatpct:SetText("Rawthreatpct: " .. rawthreatpct)
-	--ThreatMinithreatvalue:SetText("Threat: " .. threatvalue)
-	--ThreatMiniTankThreat:SetText("TankThreat: " .. tankThreat)
-
 end
 
 function ThreatMini_OnLoad()
-	print("ERR1")
 	ThreatMini:RegisterEvent('ADDON_LOADED')
 	ThreatMini:RegisterEvent("PLAYER_TARGET_CHANGED")
 	ThreatMini:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-	print("ERR2")
 end
 
 function ThreatMini_OnEvent(self, event, ...)
 	if select(1, ...) == "ThreatMini" then
-		print("ThreatMini loaded fired")
+		InitSettings()
 		CreateFontstring()
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		TargetFrame_UpdateThreat()
