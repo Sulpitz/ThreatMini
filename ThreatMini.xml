@@ -19,7 +19,7 @@
   </Frame>
 
 <!-- ThreatMini UI Window -->
-  <Frame name="ThreatMiniUiWindow" frameStrata="DIALOG" parent="UIParent" hidden="false" movable="true" enableMouse="true">
+  <Frame name="ThreatMiniUiWindow" frameStrata="LOW" parent="UIParent" hidden="false" movable="true" enableMouse="true">
     <Size><AbsDimension x="40" y="20"/></Size>
     <Anchors> <Anchor point="CENTER" /></Anchors>
     <Scripts>
