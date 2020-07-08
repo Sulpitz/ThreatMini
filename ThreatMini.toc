@@ -1,10 +1,11 @@
-## Interface: 11302
+## Interface: 11305
 ## Title: ThreatMini
-## Notes: This is a small Threat display only showing percentage using LibThreatClassic2 
+## Notes: This is a small Threat display only showing percentage and delta Threat
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## Version: 0.0.1
 ## Author: Earnil
+## SavedVariablesPerCharacter: ThreatMini
 
 
 ThreatMini.xml
