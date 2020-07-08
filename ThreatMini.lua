@@ -8,21 +8,53 @@ if not LibThreatClassic then
   return
 end
 
+
+SLASH_HCSPY1 = '/tm'
+function SlashCmdList.HCSPY(msg, editbox) 
+  if msg == "reset" then
+    pPrint("HCSpy is now reset!")
+  elseif msg == "list" then
+	print("list")
+  elseif msg == "prefix" then
+    print("Prefix:")
+  else
+	isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+	print("isTanking",isTanking, status, "status", threatpct, rawthreatpct, threatvalue)
+  end
+end
+
+
+
 local function CreateFontstring()
 
   ThreatMiniPctText = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
   ThreatMiniPctText:SetText("-")
   ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
 
-  ThreatMiniAbsText = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
-  ThreatMiniAbsText:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
-  ThreatMiniAbsText:SetText("")
-  ThreatMiniAbsText:SetTextColor(1, 1, 1, 1)
+  ThreatMiniIsTanking = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
+  ThreatMiniIsTanking:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -20)
+  ThreatMiniIsTanking:SetText("ThreatMiniIsTanking")
+  ThreatMiniIsTanking:SetTextColor(1, 1, 1, 1)
+
+  ThreatMinistatus = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
+  ThreatMinistatus:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -40)
+  ThreatMinistatus:SetText("ThreatMinistatus")
+  ThreatMinistatus:SetTextColor(1, 1, 1, 1)
+
+  ThreatMinirawthreatpct = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
+  ThreatMinirawthreatpct:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -60)
+  ThreatMinirawthreatpct:SetText("ThreatMinirawthreatpct")
+  ThreatMinirawthreatpct:SetTextColor(1, 1, 1, 1)
+
+  ThreatMinithreatvalue = ThreatMiniUiWindow:CreateFontString(nil, nil, "ThreatMiniUiWindowListNameFontstring")
+  ThreatMinithreatvalue:SetPoint('TOPLEFT', ThreatMiniUiWindow, 'TOPLEFT', 0, -80)
+  ThreatMinithreatvalue:SetText("ThreatMinithreatvalue")
+  ThreatMinithreatvalue:SetTextColor(1, 1, 1, 1)
 
 end
 
 --credit to SDPhantom from Modern TargetFrame
-local function UnitThreatPercentageOfLead(unit,mob)--	Hack to implement UnitThreatPercentageOfLead()
+local function UnitThreatthreatpctageOfLead(unit,mob)--	Hack to implement UnitThreatthreatpctageOfLead()
 	local unitguid,mobguid=UnitGUID(unit),UnitGUID(mob);
 	if not (unitguid and unitguid) then return 0; end
 
@@ -40,40 +72,49 @@ local function UnitThreatPercentageOfLead(unit,mob)--	Hack to implement UnitThre
 end
 
 local function TargetFrame_UpdateThreat()
-	local percent, unitThreat, maxThreat = UnitThreatPercentageOfLead("player","target")
-	percent = math.floor(percent)
-	if percent >= 100 then 
+	--local threatpct, unitThreat, maxThreat = UnitThreatthreatpctageOfLead("player","target") old threat api
+	isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+	if (threatpct == nil) then return end
+	print(isTanking, status, threatpct, rawthreatpct, threatvalue)
+	threatpct = math.floor(threatpct)
+	if threatpct >= 100 then 
 		ThreatMiniPctText:SetTextColor(1, 0, 0, 1)
 	else
 		ThreatMiniPctText:SetTextColor(1, 1, 1, 1)
 	end
-	if percent > 0 then
-		ThreatMiniPctText:SetText(percent .. "%")
+	if threatpct > 0 then
+		ThreatMiniPctText:SetText(threatpct .. "%")
 	else
 		ThreatMiniPctText:SetText("-")
-	end
-	ThreatMiniAbsText:SetText("")
-	if maxThreat == nil or percent == 0 then return end
+	end	
+	if isTanking then ThreatMiniIsTanking:SetText("Tanking!") else ThreatMiniIsTanking:SetText("not Tanking") end
+	ThreatMinistatus:SetText("Status: " .. status)
+	ThreatMinirawthreatpct:SetText("Rawthreatpct: " .. rawthreatpct)
+	ThreatMinithreatvalue:SetText("Threat: " .. threatvalue)
+
+	do return end
+
+	ThreatMinithreatvalue:SetText("")
 	local threatDelta = unitThreat - maxThreat
 	if threatDelta > 0 then
-		ThreatMiniAbsText:SetTextColor(1, 0.6, 0.6, 1)
+		ThreatMinithreatvalue:SetTextColor(1, 0.6, 0.6, 1)
 	else
-		ThreatMiniAbsText:SetTextColor(0.6, 1, 1, 1)
+		ThreatMinithreatvalue:SetTextColor(0.6, 1, 1, 1)
 	end
-	ThreatMiniAbsText:SetText(math.floor(threatDelta) .. " (".. math.floor(unitThreat) .. " / " .. math.floor(maxThreat) .. ")")
 end
 
 --	LibThreatClassic Registration
-local LTCIdentifier={};--	CallbackHandler-1.0 can take any value as an identifier, same identifiers overwrite each other on the same events
-LibThreatClassic.RegisterCallback(LTCIdentifier,"Activate",TargetFrame_UpdateThreat);
-LibThreatClassic.RegisterCallback(LTCIdentifier,"ThreatUpdated",function(event,unitguid,targetguid)
-	if targetguid==UnitGUID("target") then TargetFrame_UpdateThreat(); end
-end);
-LibThreatClassic:RequestActiveOnSolo();
+--local LTCIdentifier={};--	CallbackHandler-1.0 can take any value as an identifier, same identifiers overwrite each other on the same events
+--LibThreatClassic.RegisterCallback(LTCIdentifier,"Activate",TargetFrame_UpdateThreat);
+--LibThreatClassic.RegisterCallback(LTCIdentifier,"ThreatUpdated",function(event,unitguid,targetguid)
+--	if targetguid==UnitGUID("target") then TargetFrame_UpdateThreat(); end
+--end);
+--LibThreatClassic:RequestActiveOnSolo();
 
 function ThreatMini_OnLoad()
   ThreatMini:RegisterEvent('ADDON_LOADED')
   ThreatMini:RegisterEvent("PLAYER_TARGET_CHANGED")
+  ThreatMini:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 end
 
 function ThreatMini_OnEvent(self, event, ...)
@@ -81,6 +122,8 @@ function ThreatMini_OnEvent(self, event, ...)
     print("ThreatMini loaded fired")
     CreateFontstring()
   elseif event == "PLAYER_TARGET_CHANGED" then
+    TargetFrame_UpdateThreat()
+  elseif event == "UNIT_THREAT_LIST_UPDATE" then
     TargetFrame_UpdateThreat()
   end
 end
