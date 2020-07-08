@@ -48,23 +48,23 @@ local function GetTankThreat()
 	
 	if IsInRaid() then
 		for i = 1, GetNumGroupMembers() do			
-			if select(1, UnitDetailedThreatSituation(raid..i, "target")) then
-				return select(5, UnitDetailedThreatSituation(raid..i, "target"))		 
+			if select(1, UnitDetailedThreatSituation("raid" .. i, "target")) then
+				return select(5, UnitDetailedThreatSituation("raid"..i, "target"))		 
 			end
-			if UnitExists(raidpet..i) then 						
-				if select(1, UnitDetailedThreatSituation(raidpet..i, "target")) then
-					return select(5, UnitDetailedThreatSituation(raidpet..i, "target"))		 
+			if UnitExists("raidpet"..i) then 						
+				if select(1, UnitDetailedThreatSituation("raidpet"..i, "target")) then
+					return select(5, UnitDetailedThreatSituation("raidpet"..i, "target"))		 
 				end
 			end
 		end
 	elseif IsInGroup() then
 		for i = 1, GetNumGroupMembers() do			
-			if select(1, UnitDetailedThreatSituation(party..i, "target")) then
-				return select(5, UnitDetailedThreatSituation(raid..i, "target"))
+			if select(1, UnitDetailedThreatSituation("party"..i, "target")) then
+				return select(5, UnitDetailedThreatSituation("raid"..i, "target"))
 			end
 			if UnitExists(partypet..i) then 						
-				if select(1, UnitDetailedThreatSituation(partypet..i, "target")) then
-					return select(5, UnitDetailedThreatSituation(partypet..i, "target"))		 
+				if select(1, UnitDetailedThreatSituation("partypet"..i, "target")) then
+					return select(5, UnitDetailedThreatSituation("partypet"..i, "target"))		 
 				end
 			end
 		end	
