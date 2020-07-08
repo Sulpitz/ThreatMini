@@ -36,8 +36,7 @@ end
 
 local function GetTankThreat()
 	
-	if select(1, UnitDetailedThreatSituation("targettarget", "target")) then	
-		print("threat by target tartget found")	
+	if select(1, UnitDetailedThreatSituation("targettarget", "target")) then
 		return select(5, UnitDetailedThreatSituation("targettarget", "target"))
 	end
 
